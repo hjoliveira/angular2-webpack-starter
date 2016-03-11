@@ -22,21 +22,43 @@ import {XLarge} from './directives/x-large';
   // We need to tell Angular's compiler which custom pipes are in our template.
   pipes: [ ],
   // Our list of styles in our component. We may add more to compose many styles together
-  styles: [ require('./home.css') ],
+  styles: [ `span { color: red }` ],
   // Every Angular template is first compiled by the browser before Angular runs it's compiler
-  template: require('./home.html')
+  template: `<div>
+    <span x-large>Hello</span>
+    <input type="text" [value]="data.value" (input)="data.value = $event.target.value" autofocus>
+    <!--
+      Rather than wiring up two-way data-binding ourselves
+      we can use Angular's [(ngModel)] syntax
+      <input type="text" [(ngModel)]="title.value">
+    -->
+
+    <pre>this.data = {{ data | json }}</pre>
+    <p>{{ date | date:'medium' }}</p>
+  </div>
+`
 })
 export class Home {
   // Set our default values
+  date: Date
+
   data = { value: '' };
   // TypeScript public modifiers
   constructor(public title: Title) {
+    setInterval(() => this.date = new Date(), 1000);
+  }
 
+  ngOnChanges(changes) {
+    console.log('changes:' + changes);
   }
 
   ngOnInit() {
     console.log('hello `Home` component');
     // this.title.getData().subscribe(data => this.data = data);
+  }
+
+  ngOnDestroy() {
+    console.log('ngOnDestroy');
   }
 
 }
